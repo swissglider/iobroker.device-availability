@@ -1,0 +1,72 @@
+{
+    "common": {
+        "name": "device-availability",
+        "version": "0.0.1",
+        "news": {
+            "0.0.1": {
+                "en": "initial release",
+                "de": "Erstveröffentlichung",
+                "ru": "Начальная версия",
+                "pt": "lançamento inicial",
+                "nl": "Eerste uitgave",
+                "fr": "Première version",
+                "it": "Versione iniziale",
+                "es": "Versión inicial",
+                "pl": "Pierwsze wydanie",
+                "zh-cn": "首次出版"
+            }
+        },
+        "title": "Check device availability",
+        "titleLang": {
+            "en": "Check device availability",
+            "de": "Überprüfen Sie die Geräteverfügbarkeit",
+            "ru": "Проверить доступность устройства",
+            "pt": "Verifique a disponibilidade do dispositivo",
+            "nl": "Controleer de beschikbaarheid van het apparaat",
+            "fr": "Vérifier la disponibilité de l'appareil",
+            "it": "Verifica la disponibilità del dispositivo",
+            "es": "Verificar la disponibilidad del dispositivo",
+            "pl": "Sprawdź dostępność urządzenia",
+            "zh-cn": "检查设备可用性"
+        },
+        "desc": {
+            "en": "The device availability adapter checks regularly all the configured states/devices if the last update is not longer as a given time",
+            "de": "Der Geräteverfügbarkeitsadapter überprüft regelmäßig alle konfigurierten Status / Geräte, wenn das letzte Update nicht länger als eine bestimmte Zeit ist",
+            "ru": "Адаптер доступности устройства регулярно проверяет все настроенные состояния / устройства, если последнее обновление не превышает заданное время.",
+            "pt": "O adaptador de disponibilidade do dispositivo verifica regularmente todos os estados / dispositivos configurados se a última atualização não for mais longa",
+            "nl": "De apparaatbeschikbaarheidsadapter controleert regelmatig alle geconfigureerde statussen / apparaten als de laatste update niet langer is dan een bepaalde tijd",
+            "fr": "L'adaptateur de disponibilité des appareils vérifie régulièrement tous les états / appareils configurés si la dernière mise à jour n'est pas plus longue qu'une heure donnée",
+            "it": "L'adattatore di disponibilità del dispositivo controlla regolarmente tutti gli stati / dispositivi configurati se l'ultimo aggiornamento non è più lungo di un determinato periodo di tempo",
+            "es": "El adaptador de disponibilidad de dispositivos comprueba periódicamente todos los estados / dispositivos configurados si la última actualización no es más larga en un momento determinado",
+            "pl": "Adapter dostępności urządzenia regularnie sprawdza wszystkie skonfigurowane stany / urządzenia, jeśli ostatnia aktualizacja nie jest dłuższa w podanym czasie",
+            "zh-cn": "设备可用性适配器是否定期检查所有已配置的状态/设备，如果最近的更新没有在给定的时间内"
+        },
+        "authors": ["Swissglider <npm@swissglider.com>"],
+        "keywords": ["availability", "devices", "iot", "alarm"],
+        "license": "MIT",
+        "platform": "Javascript/Node.js",
+        "main": "build/main.js",
+        "icon": "device-availability.png",
+        "enabled": true,
+        "extIcon": "https://raw.githubusercontent.com/swissglider/ioBroker.device-availability/master/admin/device-availability.png",
+        "readme": "https://github.com/swissglider/ioBroker.device-availability/blob/master/README.md",
+        "loglevel": "info",
+        "mode": "daemon",
+        "type": "alarm",
+        "compact": true,
+        "connectionType": "local",
+        "dataSource": "poll",
+        "materialize": true,
+        "dependencies": [
+            {
+                "js-controller": ">=2.0.0"
+            }
+        ]
+    },
+    "native": {
+        "option1": true,
+        "option2": "42"
+    },
+    "objects": [],
+    "instanceObjects": []
+}
