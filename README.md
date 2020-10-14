@@ -1,3 +1,5 @@
+### __WORK IN PROGRESS__
+
 ![Logo](admin/device-availability.png)
 # ioBroker.device-availability
 
