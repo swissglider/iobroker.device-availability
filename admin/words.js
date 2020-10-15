@@ -26,16 +26,20 @@ systemDictionary = {
         pl: 'opcja 1',
         'zh-cn': '选项1',
     },
-    option2: {
-        en: 'option2',
-        de: 'Option 2',
-        ru: 'option2',
-        pt: 'opção 2',
-        nl: 'Optie 2',
-        fr: 'Option 2',
-        it: 'opzione 2',
-        es: 'opcion 2',
-        pl: 'Opcja 2',
-        'zh-cn': '选项2',
+    hours_of_not_available: {
+        en: 'Hours a device can be not available - default is after 24h not available',
+        de: 'Anzahl Stunden ein Gerät darf nicht Verfügbar sein - Default ist, dass nach 24 ein Alarm geschickt wird',
+    },
+    schedule_cron: {
+        en: 'Cron for the schedule to scedule the checks - default each 4 hours (0 */4 * * *)',
+        de: 'Cron in welchem Interval der Adapter jeweils einen check macht, Default ist 4 Stunden (0 */4 * * *)',
+    },
+    alarm_to_pushover: {
+        en: 'Alarm to pushover active',
+        de: 'Soll ein Alarm an pushover gesendet werden',
+    },
+    reset_to_default: {
+        en: 'Reset to default value',
+        de: 'Auf Anfangswerte zurücksetzten',
     },
 };

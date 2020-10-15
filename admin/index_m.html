@@ -34,6 +34,11 @@
                     }
                 });
                 onChange(false);
+
+                $('.add-element').click(function () {
+                    console.log('test');
+                });
+
                 // reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
                 if (M) M.updateTextFields();
             }
@@ -59,11 +64,11 @@
         <div class="m adapter-container">
             <div class="row">
                 <div class="col s12 m4 l2">
-                    <img src="device_availability.png" class="logo" />
+                    <img src="device-availability.png" class="logo" />
                 </div>
             </div>
             <div class="row">
-                <div class="col s12">
+                <div class="col s12 deep-orange lighten-5">
                     <ul class="tabs transparent">
                         <li class="tab col s4">
                             <a class="active" href="#general_tab">
@@ -82,27 +87,56 @@
                         </li>
                     </ul>
                 </div>
-            </div>
-            <div class="row">
-                <div id="general_tab" class="col s12 transparent">
-                    <!-- Put your content here -->
-
-                    <!-- For example columns with settings: -->
-                    <div class="row">
-                        <div class="col s6 input-field">
-                            <input type="checkbox" class="value" id="option1" />
-                            <label for="option1" class="translate">option1</label>
-                        </div>
-
-                        <div class="col s6 input-field">
-                            <input type="text" class="value" id="option2" />
-                            <label for="option2" class="translate">option2</label>
+                <div id="general_tab" class="col s12 blue-grey lighten-5">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s10 offset-s1">
+                                <!-- Put your content here -->
+                                <!-- For example columns with settings: -->
+                                <div class="row">
+                                    <div class="col s12 input-field">
+                                        <input type="text" class="value" id="schedule_cron" />
+                                        <label for="schedule_cron" class="translate">schedule_cron</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12 input-field">
+                                        <input type="number" class="value" id="hours_of_not_available" />
+                                        <label for="hours_of_not_available" class="translate"
+                                            >hours_of_not_available</label
+                                        >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12 input-field">
+                                        <input type="checkbox" class="value" id="alarm_to_pushover" />
+                                        <label for="alarm_to_pushover" class="translate">alarm_to_pushover</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <a class="waves-effect waves-light btn reset_to_default">
+                                        <i class="material-icons left">autorenew</i>
+                                        <span class="translate">reset_to_default</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div id="include_tab" class="col s12 transparent">Test 2</div>
-                <div id="exclude_tab" class="col s12 transparent">Test 3</div>
+                <div id="include_tab" class="col s12 blue-grey lighten-5">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s10 offset-s1">Test 2</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="exclude_tab" class="col s12 blue-grey lighten-5">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s10 offset-s1">Test 3</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </body>
