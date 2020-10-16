@@ -27,12 +27,12 @@ systemDictionary = {
         'zh-cn': '选项1',
     },
     hours_of_not_available: {
-        en: 'Hours a device can be not available - default is after 24h not available',
-        de: 'Anzahl Stunden ein Gerät darf nicht Verfügbar sein - Default ist, dass nach 24 ein Alarm geschickt wird',
+        en: 'Hours a device can be not available',
+        de: 'Anzahl Stunden ein Gerät darf nicht Verfügbar sein',
     },
     schedule_cron: {
-        en: 'Cron for the schedule to scedule the checks - default each 4 hours (0 */4 * * *)',
-        de: 'Cron in welchem Interval der Adapter jeweils einen check macht, Default ist 4 Stunden (0 */4 * * *)',
+        en: 'Cron for the schedule to scedule the checks',
+        de: 'Cron in welchem Interval der Adapter jeweils einen check macht',
     },
     alarm_to_pushover: {
         en: 'Alarm to pushover active',

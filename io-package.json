@@ -65,15 +65,8 @@
             "pl": "Adapter dostępności urządzenia regularnie sprawdza wszystkie skonfigurowane stany / urządzenia, jeśli ostatnia aktualizacja nie jest dłuższa w podanym czasie",
             "zh-cn": "设备可用性适配器是否定期检查所有已配置的状态/设备，如果最近的更新没有在给定的时间内"
         },
-        "authors": [
-            "Swissglider <npm@swissglider.com>"
-        ],
-        "keywords": [
-            "availability",
-            "devices",
-            "iot",
-            "alarm"
-        ],
+        "authors": ["Swissglider <npm@swissglider.com>"],
+        "keywords": ["availability", "devices", "iot", "alarm"],
         "license": "MIT",
         "platform": "Javascript/Node.js",
         "main": "build/main.js",
@@ -106,10 +99,10 @@
     },
     "native": {
         "default_not_overwritte_schedule_cron": "0 */4 * * *",
-        "default_not_overwritte_hours_of_not_available": 4,
+        "default_not_overwritte_hours_of_not_available": 24,
         "default_not_overwritte_alarm_to_pushover": true,
         "schedule_cron": "0 */4 * * *",
-        "hours_of_not_available": 4,
+        "hours_of_not_available": 24,
         "alarm_to_pushover": true
     },
     "objects": [],
