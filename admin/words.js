@@ -28,11 +28,11 @@ systemDictionary = {
     },
     hours_of_not_available: {
         en: 'Hours a device can be not available',
-        de: 'Anzahl Stunden ein Gerät darf nicht Verfügbar sein',
+        de: 'Nichtverfügbarkeit der Geräte in Stunden',
     },
-    schedule_cron: {
-        en: 'Cron for the schedule to scedule the checks',
-        de: 'Cron in welchem Interval der Adapter jeweils einen check macht',
+    check_interval: {
+        en: 'Intervall in ms to check the availability',
+        de: 'Interval in ms um die Verfügbarkeit zu testen',
     },
     alarm_to_pushover: {
         en: 'Alarm to pushover active',
@@ -41,5 +41,61 @@ systemDictionary = {
     reset_to_default: {
         en: 'Reset to default value',
         de: 'Auf Anfangswerte zurücksetzten',
+    },
+    general_tab: {
+        en: 'General Configurations',
+        de: 'Allgemeine Einstellungen',
+    },
+    include_tab: {
+        en: 'Devices to check',
+        de: 'Geräte zu prüfen',
+    },
+    exclude_tab: {
+        en: 'Devices not to check',
+        de: 'Geräte nicht zu prüfen',
+    },
+    'in Millisecond': {
+        en: 'in milliseconds',
+        de: 'in Milli-Sekunden',
+    },
+    ms_calculator_input_value: {
+        en: 'input value',
+        de: 'Eingangswert',
+    },
+    Millisecond: {
+        en: 'milliseconds',
+        de: 'Milli-Sekunden',
+    },
+    Second: {
+        en: 'seconds',
+        de: 'Sekunden',
+    },
+    Minute: {
+        en: 'minutes',
+        de: 'Minuten',
+    },
+    Hour: {
+        en: 'hours',
+        de: 'Stunden',
+    },
+    Days: {
+        en: 'days',
+        de: 'Tage',
+    },
+    'take the milliseconds': {
+        en: 'take the milliseconds',
+        de: 'die Milli-Sekunden übernehmen',
+    },
+    Cancel: {
+        en: 'Cancel',
+        de: 'Abbrechen',
+    },
+    From: {
+        en: 'from',
+        de: 'von',
+    },
+    To: {
+        en: 'to',
+        de: 'zu',
     },
 };

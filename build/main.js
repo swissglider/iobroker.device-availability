@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = require("@iobroker/adapter-core");
+let timer;
 class DeviceAvailability extends utils.Adapter {
     constructor(options = {}) {
         super(Object.assign(Object.assign({}, options), { name: 'device-availability' }));
@@ -72,7 +73,12 @@ class DeviceAvailability extends utils.Adapter {
             this.log.info('check user admin pw iobroker: ' + result);
             result = yield this.checkGroupAsync('admin', 'admin');
             this.log.info('check group user admin group admin: ' + result);
+            this.timerToStart();
         });
+    }
+    timerToStart() {
+        timer = setTimeout(() => this.timerToStart(), 5000);
+        this.log.info('timer');
     }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
@@ -84,6 +90,9 @@ class DeviceAvailability extends utils.Adapter {
             // clearTimeout(timeout2);
             // ...
             // clearInterval(interval1);
+            if (timer) {
+                clearTimeout(timer);
+            }
             callback();
         }
         catch (e) {

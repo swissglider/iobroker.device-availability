@@ -6,6 +6,8 @@
 // you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
 
+let timer: NodeJS.Timeout;
+
 // Load your modules here, e.g.:
 // import * as fs from "fs";
 
@@ -92,6 +94,14 @@ class DeviceAvailability extends utils.Adapter {
 
         result = await this.checkGroupAsync('admin', 'admin');
         this.log.info('check group user admin group admin: ' + result);
+
+        this.timerToStart();
+    }
+
+    private timerToStart(): void {
+        timer = setTimeout(() => this.timerToStart(), 5000);
+
+        this.log.info('timer');
     }
 
     /**
@@ -104,6 +114,10 @@ class DeviceAvailability extends utils.Adapter {
             // clearTimeout(timeout2);
             // ...
             // clearInterval(interval1);
+
+            if (timer) {
+                clearTimeout(timer);
+            }
 
             callback();
         } catch (e) {
