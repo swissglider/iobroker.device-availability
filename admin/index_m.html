@@ -5,17 +5,11 @@
         <link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
         <link rel="stylesheet" type="text/css" href="../../lib/css/materialize.css" />
 
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-        />
-
         <script type="text/javascript" src="../../lib/js/jquery-3.2.1.min.js"></script>
         <script type="text/javascript" src="../../socket.io/socket.io.js"></script>
 
         <script type="text/javascript" src="../../js/translate.js"></script>
         <script type="text/javascript" src="../../lib/js/materialize.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
         <script type="text/javascript" src="../../lib/js/jquery-ui.min.js"></script>
         <script type="text/javascript" src="../../lib/js/jquery.fancytree-all.min.js"></script>
 
@@ -44,6 +38,24 @@
                             .on('keyup', () => onChange());
                     }
                 });
+                if (
+                    settings['includeCollection'] &&
+                    Array.isArray(settings['includeCollection']) &&
+                    settings['includeCollection'].length > 0
+                ) {
+                    settings['includeCollection'].forEach((value) => {
+                        addSelectDeviceLi(true, false, value, onChange);
+                    });
+                }
+                if (
+                    settings['excludeCollection'] &&
+                    Array.isArray(settings['excludeCollection']) &&
+                    settings['excludeCollection'].length > 0
+                ) {
+                    settings['excludeCollection'].forEach((value) => {
+                        addSelectDeviceLi(false, true, value, onChange);
+                    });
+                }
                 onChange(false);
 
                 $('.add-element').click(() => {
@@ -67,13 +79,6 @@
                     }
                     // $('#' + attri).val(settings['default_not_overwritte_' + attri]);
                     onChange();
-                });
-
-                $('.dropdown-trigger').dropdown();
-
-                $('.fixed-action-btn').floatingActionButton({
-                    direction: 'left',
-                    hoverEnabled: false,
                 });
 
                 $('.calculateMilliseconds').click(() => {
@@ -110,7 +115,44 @@
                 });
 
                 $('#addExcludeDevice').click(() => {
-                    addSelectDeviceLi(false, true, '...E', onChange);
+                    addSelectDeviceLi(false, true, '...', onChange);
+                });
+
+                $('#resetExcludeDevice').click(() => {
+                    // $('ul.excludeCollection').clear();
+                    $('ul.excludeCollection').empty();
+                    $('ul.excludeCollection').remove('li');
+
+                    if (
+                        settings['default_not_overwritte_excludeCollection'] &&
+                        Array.isArray(settings['default_not_overwritte_excludeCollection']) &&
+                        settings['default_not_overwritte_excludeCollection'].length > 0
+                    ) {
+                        console.log('exclude');
+                        settings['default_not_overwritte_excludeCollection'].forEach((value) => {
+                            addSelectDeviceLi(false, true, value, onChange);
+                        });
+                    }
+                });
+
+                $('#resetIncludeDevice').click(() => {
+                    // $('ul.includeCollection').clear();
+                    $('ul.includeCollection').empty();
+                    $('ul.includeCollection').remove('li');
+                    console.log(settings['default_not_overwritte_includeCollection']);
+                    console.log(settings['default_not_overwritte_includeCollection']);
+                    console.log(Array.isArray(settings['default_not_overwritte_includeCollection']));
+                    console.log(settings['default_not_overwritte_includeCollection'].length > 0);
+                    if (
+                        settings['default_not_overwritte_includeCollection'] &&
+                        Array.isArray(settings['default_not_overwritte_includeCollection']) &&
+                        settings['default_not_overwritte_includeCollection'].length > 0
+                    ) {
+                        console.log('include');
+                        settings['default_not_overwritte_includeCollection'].forEach((value) => {
+                            addSelectDeviceLi(true, false, value, onChange);
+                        });
+                    }
                 });
 
                 $('.collection').on('click', '.remove-item', function () {
@@ -138,12 +180,16 @@
             function addSelectDeviceLi(include, exclude, value, onChange) {
                 if ((include || exclude) && !(include && exclude)) {
                     collection = 'includeCollection';
+                    spanSaveClass = 'includeSpanClass';
                     if (exclude) {
                         collection = 'excludeCollection';
+                        spanSaveClass = 'excludeSpanClass';
                     }
                     $('.collection.' + collection).append(
                         '<li class="collection-item transparent row">' +
-                            '<span class="collectionSpan col s10" contenteditable="true">' +
+                            '<span class="collectionSpan ' +
+                            spanSaveClass +
+                            ' col s10" contenteditable="true">' +
                             value +
                             '</span>' +
                             '<i class="small material-icons status_editor-item col s1 blue-text text-darken-2">local_library_circle_outline</i>' +
@@ -166,6 +212,25 @@
                         obj[$this.attr('id')] = $this.val();
                     }
                 });
+
+                // get all include Devices and saves it
+                var includeCollection = [];
+                $('span.includeSpanClass').each(function (index, value) {
+                    if ($(value).text() != '...') {
+                        includeCollection.push($(value).text());
+                    }
+                });
+                obj['includeCollection'] = includeCollection;
+
+                // get all exclude Devices and saves it
+                var excludeCollection = [];
+                $('span.excludeSpanClass').each(function (index, value) {
+                    if ($(value).text() != '...') {
+                        excludeCollection.push($(value).text());
+                    }
+                });
+                obj['excludeCollection'] = excludeCollection;
+
                 callback(obj);
             }
 
@@ -251,40 +316,23 @@
                                 <div class="row">
                                     <div class="col s12">
                                         <div class="row">
-                                            <div class="input-field col s11">
+                                            <div class="input-field col s10">
                                                 <input type="number" class="value" id="check_interval" />
                                                 <label for="check_interval" class="translate">check_interval</label>
                                             </div>
-                                            <div class="fixed-action-btn col s1">
-                                                <a
-                                                    class="btn-floating waves-effect waves-light red tooltipped"
-                                                    data-position="bottom"
-                                                    data-tooltip="Additional Options"
-                                                >
-                                                    <i class="large material-icons">menu</i>
-                                                </a>
-                                                <ul>
-                                                    <li>
-                                                        <a
-                                                            class="btn-floating red reset-value tooltipped"
-                                                            data-position="bottom"
-                                                            data-tooltip="Reset to default"
-                                                            param2change="check_interval"
-                                                        >
-                                                            <i class="material-icons">redo</i>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a
-                                                            class="btn-floating green open-dialog-calculate_millisecond tooltipped"
-                                                            data-position="bottom"
-                                                            data-tooltip="MS calculator"
-                                                        >
-                                                            <i class="material-icons">input</i>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                            <i
+                                                class="small material-icons open-dialog-calculate_millisecond col s1 green-text text-darken-2 tooltipped"
+                                                data-position="bottom"
+                                                data-tooltip="MS calculator"
+                                                >input</i
+                                            >
+                                            <i
+                                                class="small material-icons reset-value col s1 red-text text-darken-2 tooltipped"
+                                                data-position="bottom"
+                                                data-tooltip="Reset to default"
+                                                param2change="check_interval"
+                                                >redo</i
+                                            >
                                         </div>
                                     </div>
                                 </div>
@@ -297,27 +345,13 @@
                                                     >hours_of_not_available</label
                                                 >
                                             </div>
-                                            <div class="fixed-action-btn col s1">
-                                                <a
-                                                    class="btn-floating waves-effect waves-light red tooltipped"
-                                                    data-position="bottom"
-                                                    data-tooltip="Additional Options"
-                                                >
-                                                    <i class="large material-icons">menu</i>
-                                                </a>
-                                                <ul>
-                                                    <li>
-                                                        <a
-                                                            class="btn-floating red reset-value tooltipped"
-                                                            data-position="bottom"
-                                                            data-tooltip="Reset to default"
-                                                            param2change="hours_of_not_available"
-                                                        >
-                                                            <i class="material-icons">redo</i>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                            <i
+                                                class="small material-icons reset-value col s1 red-text text-darken-2 tooltipped"
+                                                data-position="bottom"
+                                                data-tooltip="Reset to default"
+                                                param2change="hours_of_not_available"
+                                                >redo</i
+                                            >
                                         </div>
                                     </div>
                                 </div>
@@ -330,36 +364,17 @@
                                                     >alarm_to_pushover</label
                                                 >
                                             </div>
-                                            <div class="fixed-action-btn col s1">
-                                                <a
-                                                    class="btn-floating waves-effect waves-light red tooltipped"
-                                                    data-position="bottom"
-                                                    data-tooltip="Additional Options"
-                                                >
-                                                    <i class="large material-icons">menu</i>
-                                                </a>
-                                                <ul>
-                                                    <li>
-                                                        <a
-                                                            class="btn-floating red reset-value tooltipped"
-                                                            data-position="bottom"
-                                                            data-tooltip="Reset to default"
-                                                            param2change="alarm_to_pushover"
-                                                        >
-                                                            <i class="material-icons">redo</i>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+
+                                            <i
+                                                class="small material-icons reset-value col s1 red-text text-darken-2 tooltipped"
+                                                data-position="bottom"
+                                                data-tooltip="Reset to default"
+                                                param2change="alarm_to_pushover"
+                                                >redo</i
+                                            >
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <div class="row">
-                                    <a class="waves-effect waves-light btn reset_to_default">
-                                        <i class="material-icons left">redo</i>
-                                        <span class="translate">reset_to_default</span>
-                                    </a>
-                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -372,9 +387,20 @@
                                 <div class="row">
                                     <div class="col s12">
                                         <ul class="collection includeCollection"></ul>
-                                        <i class="large material-icons green-text" id="addIncludeDevice"
-                                            >add_circle_outline</i
-                                        >
+                                        <div class="row">
+                                            <i
+                                                class="large material-icons green-text col offset-s2 s2"
+                                                id="addIncludeDevice"
+                                                >add_circle_outline</i
+                                            >
+                                            <i
+                                                class="large material-icons red-text col offset-s5 s2 tooltipped"
+                                                id="resetIncludeDevice"
+                                                data-position="bottom"
+                                                data-tooltip="Reset to default"
+                                                >redo</i
+                                            >
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -389,9 +415,20 @@
                                 <div class="row">
                                     <div class="col s12">
                                         <ul class="collection excludeCollection"></ul>
-                                        <i class="large material-icons green-text" id="addExcludeDevice"
-                                            >add_circle_outline</i
-                                        >
+                                        <div class="row">
+                                            <i
+                                                class="large material-icons green-text col offset-s2 s2"
+                                                id="addExcludeDevice"
+                                                >add_circle_outline</i
+                                            >
+                                            <i
+                                                class="large material-icons red-text col offset-s5 s2 tooltipped"
+                                                id="resetExcludeDevice"
+                                                data-position="bottom"
+                                                data-tooltip="Reset to default"
+                                                >redo</i
+                                            >
+                                        </div>
                                     </div>
                                 </div>
                             </div>

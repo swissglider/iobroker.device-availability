@@ -22,20 +22,3 @@ label > i[title] {
     cursor: help;
     margin-left: 0.25em;
 }
-
-.dropdown-content {
-    /* Don't wrap text in dropdowns */
-    white-space: nowrap;
-}
-
-/* Add your styles here */
-
-.fixed-action-btn {
-    position: static !important;
-}
-.fixed-action-btn.direction-left {
-    padding: 0 0 0 0px !important;
-}
-.validation_error {
-    color: red;
-}

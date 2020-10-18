@@ -89,15 +89,8 @@
             "pl": "Adapter dostępności urządzenia regularnie sprawdza wszystkie skonfigurowane stany / urządzenia, jeśli ostatnia aktualizacja nie jest dłuższa w podanym czasie",
             "zh-cn": "设备可用性适配器是否定期检查所有已配置的状态/设备，如果最近的更新没有在给定的时间内"
         },
-        "authors": [
-            "Swissglider <npm@swissglider.com>"
-        ],
-        "keywords": [
-            "availability",
-            "devices",
-            "iot",
-            "alarm"
-        ],
+        "authors": ["Swissglider <npm@swissglider.com>"],
+        "keywords": ["availability", "devices", "iot", "alarm"],
         "license": "MIT",
         "platform": "Javascript/Node.js",
         "main": "build/main.js",
@@ -132,9 +125,73 @@
         "default_not_overwritte_check_interval": 14400000,
         "default_not_overwritte_hours_of_not_available": 24,
         "default_not_overwritte_alarm_to_pushover": true,
+        "default_not_overwritte_includeCollection": [
+            "backitup.0",
+            "broadlink2.0",
+            "// ***** Deconz (deconz.1) *****",
+            "lastupdated",
+            "deconz.1.info.connection",
+            "//hue-extended.0",
+            "//influxdb.0",
+            "jeelink.0",
+            "jeelink.1",
+            "// ***** MiHome (mihome.0) *****",
+            "//mihome.0",
+            ".voltage",
+            "mihome.0.devices.gateway_7811dc64e4d4.connected.illumination",
+            "//pushover.0",
+            "// ***** Shelly (shelly.0) *****",
+            ".uptime",
+            "// ***** Sonoff (sonoff.0) *****",
+            ".Uptime"
+        ],
+        "default_not_overwritte_excludeCollection": [
+            "system.adapter.",
+            "info.0.",
+            "// ***** Deconz *****",
+            "deconz.1.sensors.000000000041db88 // Tap Office",
+            "deconz.1.sensors.00158d0001e832e8 // Smart Switch Büro",
+            "deconz.1.sensors.00158d0002c7bd7d // Schalter Szene Stube TV",
+            "deconz.1.sensors.00158d0002cb17ce // Licht Switch Eltern",
+            "// ***** Sonoff (sonoff.0) *****",
+            "sonoff.0.sonof_fr_fbridge",
+            "shelly.0.SHWT-1#C8AC50#1 // flooting sensor"
+        ],
         "check_interval": 14400000,
         "hours_of_not_available": 24,
-        "alarm_to_pushover": true
+        "alarm_to_pushover": true,
+        "includeCollection": [
+            "backitup.0",
+            "broadlink2.0",
+            "// ***** Deconz (deconz.1) *****",
+            "lastupdated",
+            "deconz.1.info.connection",
+            "//hue-extended.0",
+            "//influxdb.0",
+            "jeelink.0",
+            "jeelink.1",
+            "// ***** MiHome (mihome.0) *****",
+            "//mihome.0",
+            ".voltage",
+            "mihome.0.devices.gateway_7811dc64e4d4.connected.illumination",
+            "//pushover.0",
+            "// ***** Shelly (shelly.0) *****",
+            ".uptime",
+            "// ***** Sonoff (sonoff.0) *****",
+            ".Uptime"
+        ],
+        "excludeCollection": [
+            "system.adapter.",
+            "info.0.",
+            "// ***** Deconz *****",
+            "deconz.1.sensors.000000000041db88 // Tap Office",
+            "deconz.1.sensors.00158d0001e832e8 // Smart Switch Büro",
+            "deconz.1.sensors.00158d0002c7bd7d // Schalter Szene Stube TV",
+            "deconz.1.sensors.00158d0002cb17ce // Licht Switch Eltern",
+            "// ***** Sonoff (sonoff.0) *****",
+            "sonoff.0.sonof_fr_fbridge",
+            "shelly.0.SHWT-1#C8AC50#1 // flooting sensor"
+        ]
     },
     "objects": [],
     "instanceObjects": []
