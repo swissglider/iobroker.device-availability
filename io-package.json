@@ -101,15 +101,8 @@
             "pl": "Adapter dostępności urządzenia regularnie sprawdza wszystkie skonfigurowane stany / urządzenia, jeśli ostatnia aktualizacja nie jest dłuższa w podanym czasie",
             "zh-cn": "设备可用性适配器是否定期检查所有已配置的状态/设备，如果最近的更新没有在给定的时间内"
         },
-        "authors": [
-            "Swissglider <npm@swissglider.com>"
-        ],
-        "keywords": [
-            "availability",
-            "devices",
-            "iot",
-            "alarm"
-        ],
+        "authors": ["Swissglider <npm@swissglider.com>"],
+        "keywords": ["availability", "devices", "iot", "alarm"],
         "license": "MIT",
         "platform": "Javascript/Node.js",
         "main": "build/main.js",
@@ -129,7 +122,8 @@
         "subscribe": "messagebox",
         "dependencies": [
             {
-                "js-controller": ">=2.0.0"
+                "js-controller": ">=2.0.0",
+                "web": ">=3.0.12"
             }
         ],
         "welcomeScreen": {
@@ -142,8 +136,9 @@
     },
     "native": {
         "default_not_overwritte_check_interval": 14400000,
-        "default_not_overwritte_hours_of_not_available": 24,
+        "default_not_overwritte_milliseconds_of_not_available": 86400000,
         "default_not_overwritte_alarm_to_pushover": true,
+        "default_not_overwritte_alarm_to_influx": true,
         "default_not_overwritte_includeCollection": [
             "backitup.0",
             "broadlink2.0",
@@ -177,8 +172,9 @@
             "shelly.0.SHWT-1#C8AC50#1 // flooting sensor"
         ],
         "check_interval": 14400000,
-        "hours_of_not_available": 24,
+        "milliseconds_of_not_available": 86400000,
         "alarm_to_pushover": true,
+        "alarm_to_influx": true,
         "includeCollection": [
             "backitup.0",
             "broadlink2.0",

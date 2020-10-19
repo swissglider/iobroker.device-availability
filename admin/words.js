@@ -26,9 +26,9 @@ systemDictionary = {
         pl: 'opcja 1',
         'zh-cn': '选项1',
     },
-    hours_of_not_available: {
-        en: 'Hours a device can be not available',
-        de: 'Nichtverfügbarkeit der Geräte in Stunden',
+    milliseconds_of_not_available: {
+        en: 'milliseconds a device can be not available',
+        de: 'Nichtverfügbarkeit der Geräte in Millisekunden',
     },
     check_interval: {
         en: 'Intervall in ms to check the availability',
@@ -37,6 +37,10 @@ systemDictionary = {
     alarm_to_pushover: {
         en: 'Alarm to pushover active',
         de: 'Soll ein Alarm an pushover gesendet werden',
+    },
+    alarm_to_influx: {
+        en: 'Save not available to InfluxDB',
+        de: 'Speichere Nichtverfügbare in InfluxDB',
     },
     reset_to_default: {
         en: 'Reset to default value',

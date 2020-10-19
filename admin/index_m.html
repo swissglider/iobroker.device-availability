@@ -58,13 +58,11 @@
                 }
                 onChange(false);
 
-                $('.add-element').click(() => {
-                    console.log('test');
-                });
-
                 $('.reset_to_default').click(() => {
                     $('#check_interval').val(settings['default_not_overwritte_check_interval']);
-                    $('#hours_of_not_available').val(settings['default_not_overwritte_hours_of_not_available']);
+                    $('#milliseconds_of_not_available').val(
+                        settings['default_not_overwritte_milliseconds_of_not_available'],
+                    );
                     $('#alarm_to_pushover').prop('checked', settings['default_not_overwritte_alarm_to_pushover']);
                     onChange();
                 });
@@ -98,6 +96,8 @@
                 });
 
                 $('.open-dialog-calculate_millisecond').click(() => {
+                    var attri = event.currentTarget.attributes['param2change'].value;
+                    $('#dialog-calculate_millisecond').attr('callerID', attri);
                     var instance = M.Modal.getInstance($('#dialog-calculate_millisecond'));
                     instance.open();
                 });
@@ -105,7 +105,7 @@
                 $('#dialog-calculate_millisecond_set').click(() => {
                     var outVal = $('#calculation_result').val();
                     if (outVal) {
-                        $('#check_interval').val(outVal);
+                        $('#' + $('#dialog-calculate_millisecond').attr('callerID')).val(outVal);
                         onChange();
                     }
                 });
@@ -128,7 +128,6 @@
                         Array.isArray(settings['default_not_overwritte_excludeCollection']) &&
                         settings['default_not_overwritte_excludeCollection'].length > 0
                     ) {
-                        console.log('exclude');
                         settings['default_not_overwritte_excludeCollection'].forEach((value) => {
                             addSelectDeviceLi(false, true, value, onChange);
                         });
@@ -139,16 +138,11 @@
                     // $('ul.includeCollection').clear();
                     $('ul.includeCollection').empty();
                     $('ul.includeCollection').remove('li');
-                    console.log(settings['default_not_overwritte_includeCollection']);
-                    console.log(settings['default_not_overwritte_includeCollection']);
-                    console.log(Array.isArray(settings['default_not_overwritte_includeCollection']));
-                    console.log(settings['default_not_overwritte_includeCollection'].length > 0);
                     if (
                         settings['default_not_overwritte_includeCollection'] &&
                         Array.isArray(settings['default_not_overwritte_includeCollection']) &&
                         settings['default_not_overwritte_includeCollection'].length > 0
                     ) {
-                        console.log('include');
                         settings['default_not_overwritte_includeCollection'].forEach((value) => {
                             addSelectDeviceLi(true, false, value, onChange);
                         });
@@ -234,6 +228,12 @@
                 callback(obj);
             }
 
+            function send_new_Message() {
+                sendTo(null, 'helloCommand', 'Hello Message', (message) => {
+                    alert('Message send with result: ' + message);
+                });
+            }
+
             var selectId;
 
             function initSelectId(noMultiselect, callback) {
@@ -289,6 +289,14 @@
                 </div>
             </div>
             <div class="row">
+                <div class="col s4 m4 l4">
+                    <a class="waves-effect waves-light btn-small" onclick="send_new_Message()">
+                        <i class="material-icons left">message</i>
+                        <span class="translate">send_new_Message</span>
+                    </a>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col s12 deep-orange lighten-5">
                     <ul class="tabs transparent">
                         <li class="tab col s4">
@@ -324,6 +332,7 @@
                                                 class="small material-icons open-dialog-calculate_millisecond col s1 green-text text-darken-2 tooltipped"
                                                 data-position="bottom"
                                                 data-tooltip="MS calculator"
+                                                param2change="check_interval"
                                                 >input</i
                                             >
                                             <i
@@ -339,17 +348,24 @@
                                 <div class="row">
                                     <div class="col s12">
                                         <div class="row">
-                                            <div class="col s11 input-field">
-                                                <input type="number" class="value" id="hours_of_not_available" />
-                                                <label for="hours_of_not_available" class="translate"
-                                                    >hours_of_not_available</label
+                                            <div class="col s10 input-field">
+                                                <input type="number" class="value" id="milliseconds_of_not_available" />
+                                                <label for="milliseconds_of_not_available" class="translate"
+                                                    >milliseconds_of_not_available</label
                                                 >
                                             </div>
+                                            <i
+                                                class="small material-icons open-dialog-calculate_millisecond col s1 green-text text-darken-2 tooltipped"
+                                                data-position="bottom"
+                                                data-tooltip="MS calculator"
+                                                param2change="milliseconds_of_not_available"
+                                                >input</i
+                                            >
                                             <i
                                                 class="small material-icons reset-value col s1 red-text text-darken-2 tooltipped"
                                                 data-position="bottom"
                                                 data-tooltip="Reset to default"
-                                                param2change="hours_of_not_available"
+                                                param2change="milliseconds_of_not_available"
                                                 >redo</i
                                             >
                                         </div>
@@ -370,6 +386,24 @@
                                                 data-position="bottom"
                                                 data-tooltip="Reset to default"
                                                 param2change="alarm_to_pushover"
+                                                >redo</i
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s12">
+                                        <div class="row">
+                                            <div class="col s11 input-field">
+                                                <input type="checkbox" class="value" id="alarm_to_influx" />
+                                                <label for="alarm_to_influx" class="translate">alarm_to_influx</label>
+                                            </div>
+
+                                            <i
+                                                class="small material-icons reset-value col s1 red-text text-darken-2 tooltipped"
+                                                data-position="bottom"
+                                                data-tooltip="Reset to default"
+                                                param2change="alarm_to_influx"
                                                 >redo</i
                                             >
                                         </div>

@@ -20,9 +20,8 @@ class DeviceAvailability extends utils.Adapter {
     constructor(options = {}) {
         super(Object.assign(Object.assign({}, options), { name: 'device-availability' }));
         this.on('ready', this.onReady.bind(this));
-        this.on('stateChange', this.onStateChange.bind(this));
         // this.on('objectChange', this.onObjectChange.bind(this));
-        // this.on('message', this.onMessage.bind(this));
+        this.on('message', this.onMessage.bind(this));
         this.on('unload', this.onUnload.bind(this));
     }
     /**
@@ -33,63 +32,35 @@ class DeviceAvailability extends utils.Adapter {
             // Initialize your adapter here
             // The adapters config (in the instance object everything under the attribute "native") is accessible via
             // this.config:
-            this.log.info('config option1: ' + this.config.option1);
-            this.log.info('config option2: ' + this.config.option2);
+            // this.log.info('configs milliseconds_of_not_available: ' + this.config.milliseconds_of_not_available);
+            // this.log.info('configs check_interval: ' + this.config.check_interval);
+            // this.log.info('configs alarm_to_pushover: ' + this.config.alarm_to_pushover);
+            // this.log.info('configs includeCollection: ' + this.config.includeCollection);
+            // this.log.info('configs excludeCollection: ' + this.config.excludeCollection);
             /*
             For every state in the system there has to be also an object of type state
             Here a simple template for a boolean variable named "testVariable"
             Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
             */
-            yield this.setObjectNotExistsAsync('testVariable', {
+            yield this.setObjectNotExistsAsync('lastCheck', {
                 type: 'state',
                 common: {
                     name: 'testVariable',
-                    type: 'boolean',
-                    role: 'indicator',
+                    type: 'string',
+                    role: 'result',
                     read: true,
-                    write: true,
+                    write: false,
                 },
                 native: {},
             });
-            // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
-            this.subscribeStates('testVariable');
-            // You can also add a subscription for multiple states. The following line watches all states starting with "lights."
-            // this.subscribeStates('lights.*');
-            // Or, if you really must, you can also watch all states. Don't do this if you don't need to. Otherwise this will cause a lot of unnecessary load on the system:
-            // this.subscribeStates('*');
-            /*
-                setState examples
-                you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-            */
-            // the variable testVariable is set to true as command (ack=false)
-            yield this.setStateAsync('testVariable', true);
-            // same thing, but the value is flagged "ack"
-            // ack should be always set to true if the value is received from or acknowledged from the target system
-            yield this.setStateAsync('testVariable', { val: true, ack: true });
-            // same thing, but the state is deleted after 30s (getState will return null afterwards)
-            yield this.setStateAsync('testVariable', { val: true, ack: true, expire: 30 });
-            // examples for the checkPassword/checkGroup functions
-            let result = yield this.checkPasswordAsync('admin', 'iobroker');
-            this.log.info('check user admin pw iobroker: ' + result);
-            result = yield this.checkGroupAsync('admin', 'admin');
-            this.log.info('check group user admin group admin: ' + result);
             this.timerToStart();
         });
-    }
-    timerToStart() {
-        timer = setTimeout(() => this.timerToStart(), 5000);
-        this.log.info('timer');
     }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      */
     onUnload(callback) {
         try {
-            // Here you must clear all timeouts or intervals that may still be active
-            // clearTimeout(timeout1);
-            // clearTimeout(timeout2);
-            // ...
-            // clearInterval(interval1);
             if (timer) {
                 clearTimeout(timer);
             }
@@ -99,32 +70,106 @@ class DeviceAvailability extends utils.Adapter {
             callback();
         }
     }
-    // If you need to react to object changes, uncomment the following block and the corresponding line in the constructor.
-    // You also need to subscribe to the objects with `this.subscribeObjects`, similar to `this.subscribeStates`.
-    // /**
-    //  * Is called if a subscribed object changes
-    //  */
-    // private onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
-    //     if (obj) {
-    //         // The object was changed
-    //         this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-    //     } else {
-    //         // The object was deleted
-    //         this.log.info(`object ${id} deleted`);
-    //     }
-    // }
+    // If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
     /**
-     * Is called if a subscribed state changes
+     * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
+     * Using this method requires "common.message" property to be set to true in io-package.json
      */
-    onStateChange(id, state) {
-        if (state) {
-            // The state was changed
-            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-        }
-        else {
-            // The state was deleted
-            this.log.info(`state ${id} deleted`);
-        }
+    onMessage(obj) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (typeof obj === 'object' && obj.message) {
+                if (obj.command === 'helloCommand') {
+                    this.log.warn('Hello Command with the following message arrived: ' + obj.message);
+                    const allRelevantStates = yield this.getAllNotAvailableStates(this.config.milliseconds_of_not_available);
+                    if (obj.callback) {
+                        this.log.error('sent to callback');
+                        this.sendTo(obj.from, obj.command, JSON.stringify(allRelevantStates), obj.callback);
+                    }
+                }
+                if (obj.command === 'storeState' && obj.from.includes('system.adapter.influxdb')) {
+                    this.log.info('Message from InfluxDB : ' + JSON.stringify(obj.message));
+                }
+                else {
+                    this.log.error('New Message: ' + obj.command + ' : ' + JSON.stringify(obj.message) + ' : ' + obj.from);
+                }
+            }
+        });
+    }
+    harmoniseCollection(collection) {
+        const newColl = [];
+        collection
+            .filter((e) => !e.startsWith('//'))
+            .forEach((el) => {
+            if (el.includes('//')) {
+                el = el.substring(0, el.indexOf('//')).replace(/\s/g, '');
+            }
+            newColl.push(el);
+        });
+        return newColl;
+    }
+    timerToStart() {
+        return __awaiter(this, void 0, void 0, function* () {
+            timer = setTimeout(() => this.timerToStart(), this.config.check_interval);
+            const allRelevantStates = yield this.getAllNotAvailableStates(this.config.milliseconds_of_not_available);
+            allRelevantStates.forEach((x) => __awaiter(this, void 0, void 0, function* () {
+                const tempID = x[0].toString();
+                const tempState = x[1];
+                const tempObject = yield this.getForeignObjectAsync(tempID);
+                if (tempObject) {
+                    const errorString = 'Device: ' +
+                        tempObject.common.name +
+                        ' (' +
+                        tempID +
+                        ')' +
+                        ' - LastTimestamp: ' +
+                        new Date(tempState.ts).toLocaleString();
+                    this.log.error(errorString);
+                    if (this.config.alarm_to_pushover) {
+                        this.sendToPushover(errorString);
+                    }
+                    if (this.config.alarm_to_influx) {
+                        this.sendToInflux(tempID);
+                    }
+                }
+            }));
+            yield this.setStateAsync('lastCheck', JSON.stringify(allRelevantStates));
+        });
+    }
+    sendToPushover(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.sendToAsync('pushover', {
+                message: message,
+                title: 'Device not reable',
+                priority: 1,
+            });
+        });
+    }
+    sendToInflux(message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.sendTo('influxdb', 'storeState', {
+                id: 'Device.not.available',
+                state: { ts: Date.now(), val: message, ack: true, from: 'device-availability', q: 0 },
+            });
+        });
+    }
+    getAllNotAvailableStates(timeMaxNotAvailableInMS) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const states = yield this.getForeignStatesAsync('*');
+            const newIncludeCollection = this.harmoniseCollection(this.config.includeCollection);
+            const newExcludeCollection = this.harmoniseCollection(this.config.excludeCollection);
+            const toCheck = new Date().getTime() - timeMaxNotAvailableInMS;
+            const allRelevantStates = [];
+            for (const [key, value] of Object.entries(states)) {
+                if (value &&
+                    newIncludeCollection.some((x) => key.includes(x)) &&
+                    !newExcludeCollection.some((x) => key.includes(x))) {
+                    if ('ts' in value && value.ts < toCheck) {
+                        allRelevantStates.push([key, value]);
+                    }
+                }
+            }
+            return allRelevantStates;
+        });
     }
 }
 if (module.parent) {

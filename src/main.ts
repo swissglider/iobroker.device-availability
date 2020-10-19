@@ -17,9 +17,6 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace ioBroker {
         interface AdapterConfig {
-            // Define the shape of your options here (recommended)
-            option1: boolean;
-            option2: string;
             // Or use a catch-all approach
             [key: string]: any;
         }
@@ -33,9 +30,8 @@ class DeviceAvailability extends utils.Adapter {
             name: 'device-availability',
         });
         this.on('ready', this.onReady.bind(this));
-        this.on('stateChange', this.onStateChange.bind(this));
         // this.on('objectChange', this.onObjectChange.bind(this));
-        // this.on('message', this.onMessage.bind(this));
+        this.on('message', this.onMessage.bind(this));
         this.on('unload', this.onUnload.bind(this));
     }
 
@@ -47,61 +43,30 @@ class DeviceAvailability extends utils.Adapter {
 
         // The adapters config (in the instance object everything under the attribute "native") is accessible via
         // this.config:
-        this.log.info('config option1: ' + this.config.option1);
-        this.log.info('config option2: ' + this.config.option2);
+        // this.log.info('configs milliseconds_of_not_available: ' + this.config.milliseconds_of_not_available);
+        // this.log.info('configs check_interval: ' + this.config.check_interval);
+        // this.log.info('configs alarm_to_pushover: ' + this.config.alarm_to_pushover);
+        // this.log.info('configs includeCollection: ' + this.config.includeCollection);
+        // this.log.info('configs excludeCollection: ' + this.config.excludeCollection);
 
         /*
 		For every state in the system there has to be also an object of type state
 		Here a simple template for a boolean variable named "testVariable"
 		Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-		*/
-        await this.setObjectNotExistsAsync('testVariable', {
+        */
+        await this.setObjectNotExistsAsync('lastCheck', {
             type: 'state',
             common: {
                 name: 'testVariable',
-                type: 'boolean',
-                role: 'indicator',
+                type: 'string',
+                role: 'result',
                 read: true,
-                write: true,
+                write: false,
             },
             native: {},
         });
 
-        // In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
-        this.subscribeStates('testVariable');
-        // You can also add a subscription for multiple states. The following line watches all states starting with "lights."
-        // this.subscribeStates('lights.*');
-        // Or, if you really must, you can also watch all states. Don't do this if you don't need to. Otherwise this will cause a lot of unnecessary load on the system:
-        // this.subscribeStates('*');
-
-        /*
-			setState examples
-			you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-		*/
-        // the variable testVariable is set to true as command (ack=false)
-        await this.setStateAsync('testVariable', true);
-
-        // same thing, but the value is flagged "ack"
-        // ack should be always set to true if the value is received from or acknowledged from the target system
-        await this.setStateAsync('testVariable', { val: true, ack: true });
-
-        // same thing, but the state is deleted after 30s (getState will return null afterwards)
-        await this.setStateAsync('testVariable', { val: true, ack: true, expire: 30 });
-
-        // examples for the checkPassword/checkGroup functions
-        let result = await this.checkPasswordAsync('admin', 'iobroker');
-        this.log.info('check user admin pw iobroker: ' + result);
-
-        result = await this.checkGroupAsync('admin', 'admin');
-        this.log.info('check group user admin group admin: ' + result);
-
         this.timerToStart();
-    }
-
-    private timerToStart(): void {
-        timer = setTimeout(() => this.timerToStart(), 5000);
-
-        this.log.info('timer');
     }
 
     /**
@@ -109,12 +74,6 @@ class DeviceAvailability extends utils.Adapter {
      */
     private onUnload(callback: () => void): void {
         try {
-            // Here you must clear all timeouts or intervals that may still be active
-            // clearTimeout(timeout1);
-            // clearTimeout(timeout2);
-            // ...
-            // clearInterval(interval1);
-
             if (timer) {
                 clearTimeout(timer);
             }
@@ -125,50 +84,111 @@ class DeviceAvailability extends utils.Adapter {
         }
     }
 
-    // If you need to react to object changes, uncomment the following block and the corresponding line in the constructor.
-    // You also need to subscribe to the objects with `this.subscribeObjects`, similar to `this.subscribeStates`.
-    // /**
-    //  * Is called if a subscribed object changes
-    //  */
-    // private onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
-    //     if (obj) {
-    //         // The object was changed
-    //         this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-    //     } else {
-    //         // The object was deleted
-    //         this.log.info(`object ${id} deleted`);
-    //     }
-    // }
-
+    // If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
     /**
-     * Is called if a subscribed state changes
+     * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
+     * Using this method requires "common.message" property to be set to true in io-package.json
      */
-    private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
-        if (state) {
-            // The state was changed
-            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-        } else {
-            // The state was deleted
-            this.log.info(`state ${id} deleted`);
+    private async onMessage(obj: ioBroker.Message): Promise<void> {
+        if (typeof obj === 'object' && obj.message) {
+            if (obj.command === 'helloCommand') {
+                this.log.warn('Hello Command with the following message arrived: ' + obj.message);
+                const allRelevantStates: (string | ioBroker.State)[][] = await this.getAllNotAvailableStates(
+                    this.config.milliseconds_of_not_available,
+                );
+                if (obj.callback) {
+                    this.log.error('sent to callback');
+                    this.sendTo(obj.from, obj.command, JSON.stringify(allRelevantStates), obj.callback);
+                }
+            }
+            if (obj.command === 'storeState' && obj.from.includes('system.adapter.influxdb')) {
+                this.log.info('Message from InfluxDB : ' + JSON.stringify(obj.message));
+            } else {
+                this.log.error('New Message: ' + obj.command + ' : ' + JSON.stringify(obj.message) + ' : ' + obj.from);
+            }
         }
     }
 
-    // If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
-    // /**
-    //  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
-    //  * Using this method requires "common.message" property to be set to true in io-package.json
-    //  */
-    // private onMessage(obj: ioBroker.Message): void {
-    //     if (typeof obj === 'object' && obj.message) {
-    //         if (obj.command === 'send') {
-    //             // e.g. send email or pushover or whatever
-    //             this.log.info('send command');
+    private harmoniseCollection(collection: string[]): string[] {
+        const newColl: string[] = [];
+        collection
+            .filter((e) => !e.startsWith('//'))
+            .forEach((el: string) => {
+                if (el.includes('//')) {
+                    el = el.substring(0, el.indexOf('//')).replace(/\s/g, '');
+                }
+                newColl.push(el);
+            });
+        return newColl;
+    }
 
-    //             // Send response in callback if required
-    //             if (obj.callback) this.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-    //         }
-    //     }
-    // }
+    private async timerToStart(): Promise<void> {
+        timer = setTimeout(() => this.timerToStart(), this.config.check_interval);
+
+        const allRelevantStates: (string | ioBroker.State)[][] = await this.getAllNotAvailableStates(
+            this.config.milliseconds_of_not_available,
+        );
+
+        allRelevantStates.forEach(async (x) => {
+            const tempID: string = x[0].toString();
+            const tempState = <ioBroker.State>x[1];
+            const tempObject = await this.getForeignObjectAsync(tempID);
+            if (tempObject) {
+                const errorString =
+                    'Device: ' +
+                    tempObject.common.name +
+                    ' (' +
+                    tempID +
+                    ')' +
+                    ' - LastTimestamp: ' +
+                    new Date(tempState.ts).toLocaleString();
+                this.log.error(errorString);
+                if (this.config.alarm_to_pushover) {
+                    this.sendToPushover(errorString);
+                }
+                if (this.config.alarm_to_influx) {
+                    this.sendToInflux(tempID);
+                }
+            }
+        });
+
+        await this.setStateAsync('lastCheck', JSON.stringify(allRelevantStates));
+    }
+
+    private async sendToPushover(message: string): Promise<void> {
+        await this.sendToAsync('pushover', {
+            message: message,
+            title: 'Device not reable',
+            priority: 1,
+        });
+    }
+
+    private async sendToInflux(message: string): Promise<void> {
+        await this.sendTo('influxdb', 'storeState', {
+            id: 'Device.not.available',
+            state: { ts: Date.now(), val: message, ack: true, from: 'device-availability', q: 0 },
+        });
+    }
+
+    private async getAllNotAvailableStates(timeMaxNotAvailableInMS: number): Promise<(string | ioBroker.State)[][]> {
+        const states = await this.getForeignStatesAsync('*');
+        const newIncludeCollection = this.harmoniseCollection(this.config.includeCollection);
+        const newExcludeCollection = this.harmoniseCollection(this.config.excludeCollection);
+        const toCheck = new Date().getTime() - timeMaxNotAvailableInMS;
+        const allRelevantStates = [];
+        for (const [key, value] of Object.entries(states)) {
+            if (
+                value &&
+                newIncludeCollection.some((x: string) => key.includes(x)) &&
+                !newExcludeCollection.some((x: string) => key.includes(x))
+            ) {
+                if ('ts' in value && value.ts < toCheck) {
+                    allRelevantStates.push([key, value]);
+                }
+            }
+        }
+        return allRelevantStates;
+    }
 }
 
 if (module.parent) {
