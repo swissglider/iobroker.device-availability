@@ -228,9 +228,59 @@
                 callback(obj);
             }
 
-            function send_new_Message() {
-                sendTo(null, 'helloCommand', 'Hello Message', (message) => {
-                    alert('Message send with result: ' + message);
+            function doShortTest() {
+                var from = $('#from_time_tool').val();
+                var input_value = $('#calculation_input_tool').val();
+                var result;
+                if (input_value) {
+                    if (from === 'seconds') {
+                        result = input_value * 1000;
+                    } else if (from === 'minutes') {
+                        result = input_value * 1000 * 60;
+                    } else if (from === 'hours') {
+                        result = input_value * 1000 * 60 * 60;
+                    } else if (from === 'days') {
+                        result = input_value * 1000 * 60 * 60 * 24;
+                    }
+                }
+                if (result) {
+                    sendTo(null, 'shortTest', { milliseconds: result }, (message) => {
+                        logToolsResultMessage(message);
+                    });
+                }
+            }
+
+            function runTest() {
+                sendTo(null, 'runTest', {}, (message) => {
+                    logToolsResultMessage(message);
+                });
+            }
+
+            function getLastCheck() {
+                sendTo(null, 'getLastCheck', {}, (message) => {
+                    const states = JSON.parse(message);
+                    logToolsResultMessage(states);
+                });
+            }
+
+            function logToolsResultMessage(message) {
+                const states = JSON.parse(message);
+                $('ul.resultCollection').empty();
+                $('ul.resultCollection').remove('li');
+                $('ul.resultCollection').append(
+                    '<li class="collection-header deep-orange lighten-5"><h6>TestRun Results</h6></li>',
+                );
+                states.forEach((state) => {
+                    $('ul.resultCollection').append(
+                        '<li class="collection-item transparent row">' +
+                            '<span class="col s8">' +
+                            state[0] +
+                            '</span>' +
+                            '<span class="col s4">' +
+                            new Date(state[1].ts).toLocaleString() +
+                            '</span>' +
+                            '</li>',
+                    );
                 });
             }
 
@@ -289,29 +339,26 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col s4 m4 l4">
-                    <a class="waves-effect waves-light btn-small" onclick="send_new_Message()">
-                        <i class="material-icons left">message</i>
-                        <span class="translate">send_new_Message</span>
-                    </a>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col s12 deep-orange lighten-5">
                     <ul class="tabs transparent">
-                        <li class="tab col s4">
+                        <li class="tab col s3">
                             <a class="active" href="#general_tab">
                                 <span class="translate">general_tab</span>
                             </a>
                         </li>
-                        <li class="tab col s4">
+                        <li class="tab col s3">
                             <a href="#include_tab">
                                 <span class="translate">include_tab</span>
                             </a>
                         </li>
-                        <li class="tab col s4">
+                        <li class="tab col s3">
                             <a href="#exclude_tab">
                                 <span class="translate">exclude_tab</span>
+                            </a>
+                        </li>
+                        <li class="tab col s3">
+                            <a href="#tools_tab">
+                                <span class="translate">tools_tab</span>
                             </a>
                         </li>
                     </ul>
@@ -463,6 +510,63 @@
                                                 >redo</i
                                             >
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- *********************************************************************** Tool Tab ****************************************** -->
+                <div id="tools_tab" class="col s12 blue-grey lighten-5">
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s10 offset-s1">
+                                <div class="row">
+                                    <div class="input-field col s4">
+                                        <input type="number" id="calculation_input_tool" />
+                                        <label for="calculation_input_tool" class="translate"
+                                            >ms_calculator_input_value</label
+                                        >
+                                    </div>
+                                    <div class="input-field col s4">
+                                        <select id="from_time_tool">
+                                            <option value="seconds" class="translate">Second</option>
+                                            <option value="minutes" class="translate">Minute</option>
+                                            <option value="hours" selected class="translate">Hour</option>
+                                            <option value="days" class="translate">Days</option>
+                                        </select>
+                                        <label class="translate">From</label>
+                                    </div>
+                                    <div class="col s4">
+                                        <a class="waves-effect waves-light btn-small" onclick="doShortTest()">
+                                            <i class="material-icons left">message</i>
+                                            <span class="translate">doShortTest</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col s4">
+                                        <a class="waves-effect waves-light btn-small" onclick="runTest()">
+                                            <i class="material-icons left">message</i>
+                                            <span class="translate">runTest</span>
+                                        </a>
+                                    </div>
+                                    <div class="col s4">
+                                        <a class="waves-effect waves-light btn-small" onclick="getLastCheck()">
+                                            <i class="material-icons left">message</i>
+                                            <span class="translate">getLastCheck</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section">
+                        <div class="row">
+                            <div class="col s10 offset-s1">
+                                <div class="row">
+                                    <div class="col s12">
+                                        <ul class="collection resultCollection with-header"></ul>
                                     </div>
                                 </div>
                             </div>

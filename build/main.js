@@ -78,15 +78,30 @@ class DeviceAvailability extends utils.Adapter {
     onMessage(obj) {
         return __awaiter(this, void 0, void 0, function* () {
             if (typeof obj === 'object' && obj.message) {
-                if (obj.command === 'helloCommand') {
-                    this.log.warn('Hello Command with the following message arrived: ' + obj.message);
-                    const allRelevantStates = yield this.getAllNotAvailableStates(this.config.milliseconds_of_not_available);
+                if (obj.command === 'shortTest') {
+                    // runs a test to get all the Not available states within the given Time (the device is not available.)
+                    const params = obj.message;
+                    const milliseconds = parseInt(params.milliseconds);
+                    const allRelevantStates = yield this.getAllNotAvailableStates(milliseconds);
                     if (obj.callback) {
-                        this.log.error('sent to callback');
                         this.sendTo(obj.from, obj.command, JSON.stringify(allRelevantStates), obj.callback);
                     }
                 }
-                if (obj.command === 'storeState' && obj.from.includes('system.adapter.influxdb')) {
+                else if (obj.command === 'runTest') {
+                    // runs a standard test call with the configured parameters
+                    const allRelevantStates = yield this.getAllNotAvailableStates(this.config.milliseconds_of_not_available);
+                    if (obj.callback) {
+                        this.sendTo(obj.from, obj.command, JSON.stringify(allRelevantStates), obj.callback);
+                    }
+                }
+                else if (obj.command === 'getLastCheck') {
+                    // gets the list of the last run
+                    const allRelevantStates = yield this.getStateAsync('lastCheck');
+                    if (obj.callback && allRelevantStates) {
+                        this.sendTo(obj.from, obj.command, JSON.stringify(allRelevantStates.val), obj.callback);
+                    }
+                }
+                else if (obj.command === 'storeState' && obj.from.includes('system.adapter.influxdb')) {
                     this.log.info('Message from InfluxDB : ' + JSON.stringify(obj.message));
                 }
                 else {

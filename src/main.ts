@@ -91,17 +91,31 @@ class DeviceAvailability extends utils.Adapter {
      */
     private async onMessage(obj: ioBroker.Message): Promise<void> {
         if (typeof obj === 'object' && obj.message) {
-            if (obj.command === 'helloCommand') {
-                this.log.warn('Hello Command with the following message arrived: ' + obj.message);
+            if (obj.command === 'shortTest') {
+                // runs a test to get all the Not available states within the given Time (the device is not available.)
+                const params = <Record<string, any>>obj.message;
+                const milliseconds = parseInt(<string>params.milliseconds);
+                const allRelevantStates: (string | ioBroker.State)[][] = await this.getAllNotAvailableStates(
+                    milliseconds,
+                );
+                if (obj.callback) {
+                    this.sendTo(obj.from, obj.command, JSON.stringify(allRelevantStates), obj.callback);
+                }
+            } else if (obj.command === 'runTest') {
+                // runs a standard test call with the configured parameters
                 const allRelevantStates: (string | ioBroker.State)[][] = await this.getAllNotAvailableStates(
                     this.config.milliseconds_of_not_available,
                 );
                 if (obj.callback) {
-                    this.log.error('sent to callback');
                     this.sendTo(obj.from, obj.command, JSON.stringify(allRelevantStates), obj.callback);
                 }
-            }
-            if (obj.command === 'storeState' && obj.from.includes('system.adapter.influxdb')) {
+            } else if (obj.command === 'getLastCheck') {
+                // gets the list of the last run
+                const allRelevantStates = await this.getStateAsync('lastCheck');
+                if (obj.callback && allRelevantStates) {
+                    this.sendTo(obj.from, obj.command, JSON.stringify(allRelevantStates.val), obj.callback);
+                }
+            } else if (obj.command === 'storeState' && obj.from.includes('system.adapter.influxdb')) {
                 this.log.info('Message from InfluxDB : ' + JSON.stringify(obj.message));
             } else {
                 this.log.error('New Message: ' + obj.command + ' : ' + JSON.stringify(obj.message) + ' : ' + obj.from);

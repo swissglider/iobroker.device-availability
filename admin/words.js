@@ -58,6 +58,10 @@ systemDictionary = {
         en: 'Devices not to check',
         de: 'Geräte nicht zu prüfen',
     },
+    tools_tab: {
+        en: 'Tools',
+        de: 'Werkzeuge',
+    },
     'in Millisecond': {
         en: 'in milliseconds',
         de: 'in Milli-Sekunden',
@@ -101,5 +105,17 @@ systemDictionary = {
     To: {
         en: 'to',
         de: 'zu',
+    },
+    doShortTest: {
+        en: 'start short test',
+        de: 'Starte Kurztest',
+    },
+    runTest: {
+        en: 'start standard test',
+        de: 'Starte Standardtest',
+    },
+    getLastCheck: {
+        en: 'get last test result',
+        de: 'Zeige letztes Testresultat',
     },
 };
