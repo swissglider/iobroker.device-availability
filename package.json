@@ -19,7 +19,8 @@
     "url": "https://github.com/swissglider/ioBroker.device-availability"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.4.0"
+    "@iobroker/adapter-core": "^2.4.0",
+    "iobroker.device-availability": "swissglider/iobroker.device-availability#master"
   },
   "devDependencies": {
     "@iobroker/testing": "^2.3.0",
