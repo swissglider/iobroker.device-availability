@@ -1,6 +1,6 @@
 {
   "name": "iobroker.device-availability",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The device availability adapter checks regularly all the configured states/devices if the last update is not longer as a given time",
   "author": {
     "name": "Swissglider",
