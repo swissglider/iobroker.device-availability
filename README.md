@@ -1,4 +1,4 @@
-### 1.1.0 (2020-10-24)
+### __WORK IN PROGRESS__
 
 ![Logo](admin/device-availability.png)
 # ioBroker.device-availability
