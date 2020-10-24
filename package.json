@@ -16,11 +16,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/swissglider/ioBroker.device-availability"
+    "url": "https://github.com/swissglider/ioBroker.device-availability.git"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.4.0",
-    "iobroker.device-availability": "swissglider/iobroker.device-availability#master"
+    "@iobroker/adapter-core": "^2.4.0"
   },
   "devDependencies": {
     "@iobroker/testing": "^2.3.0",
